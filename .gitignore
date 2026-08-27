@@ -1,3 +1,25 @@
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Local builds and downloaded tool caches
 build/
 Resources/vendor/
+
+# Swift and Xcode output
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Editor-local files
+.idea/
+.vscode/
+
+# Local environment and signing material
+.env
+.env.*
+!.env.example
+*.mobileprovision
+*.p12

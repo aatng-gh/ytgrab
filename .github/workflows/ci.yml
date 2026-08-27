@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run logic tests
+        run: ./Tests/run.sh
+
+      - name: Build app
+        run: ./build.sh
+
+      - name: Verify app bundle
+        run: |
+          plutil -lint build/YTGrab.app/Contents/Info.plist
+          codesign --verify --deep --strict build/YTGrab.app
+          build/YTGrab.app/Contents/Resources/bin/yt-dlp --version
