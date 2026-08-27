@@ -57,13 +57,12 @@ fetch_vendor_tools() {
         echo "  Fetching ${name}…"
         download="$VENDOR/.$name.download"
         curl --fail --show-error --location --output "$download" "$url"
-        chmod +x "$download"
-        codesign --force --sign - --identifier "local.ytgrab.vendor.$name" "$download"
         if ! verify_sha256 "$download" "$expected"; then
             rm -f "$download"
             echo "  $name download failed its SHA-256 check." >&2
             return 1
         fi
+        chmod +x "$download"
         mv "$download" "$dest"
     done
 }
@@ -82,6 +81,10 @@ echo "Embedding standalone yt-dlp/ffmpeg/ffprobe…"
 fetch_vendor_tools
 mkdir -p "$STAGED_APP/Contents/Resources/bin"
 cp "$VENDOR/yt-dlp" "$VENDOR/ffmpeg" "$VENDOR/ffprobe" "$STAGED_APP/Contents/Resources/bin/"
+for name in yt-dlp ffmpeg ffprobe; do
+    codesign --force --sign - --identifier "local.ytgrab.vendor.$name" \
+        "$STAGED_APP/Contents/Resources/bin/$name"
+done
 
 echo "Drawing icon…"
 swift "$ROOT/Resources/make-icon.swift" \
