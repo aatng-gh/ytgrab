@@ -21,6 +21,11 @@
     {
       "matchPackageNames": ["eugeneware/ffmpeg-static"],
       "groupName": "FFmpeg static tools"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["github-runner"],
+      "enabled": false
     }
   ]
 }
