@@ -54,7 +54,7 @@ fetch_vendor_tools() {
             fi
             continue
         fi
-        echo "  Fetching $name…"
+        echo "  Fetching ${name}…"
         download="$VENDOR/.$name.download"
         curl --fail --show-error --location --output "$download" "$url"
         chmod +x "$download"
@@ -69,7 +69,12 @@ fetch_vendor_tools() {
 }
 
 rm -rf "$STAGED_APP"
-trap 'rm -rf "$STAGED_APP"' EXIT
+cleanup_staging() {
+    local status=$?
+    rm -rf "$STAGED_APP"
+    exit "$status"
+}
+trap cleanup_staging EXIT
 mkdir -p "$STAGED_APP/Contents/MacOS" "$STAGED_APP/Contents/Resources"
 cp "$ROOT/Resources/Info.plist" "$STAGED_APP/Contents/Info.plist"
 
