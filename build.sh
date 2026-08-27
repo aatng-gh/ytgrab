@@ -30,8 +30,8 @@ YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp_
 FFMPEG_URL="https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64"
 FFPROBE_URL="https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffprobe-darwin-arm64"
 YTDLP_SHA256="0f192b7ec147ab6288885d6351d9ab67367640029b4377576ef46dd79cf7b202"
-FFMPEG_SHA256="5d04dd8860929813e49c0e4411e153be69ca51e1fc0b5cb9b464b8e6f3be1ff6"
-FFPROBE_SHA256="ccaf8e18367e39c43ba0371976d26155fed602a1ce71aee929b8dff526dc2d28"
+FFMPEG_SHA256="a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+FFPROBE_SHA256="bb2db6f5d8cef919da12fbf592119a987202a8c060a886f3cab091f9cab90b64"
 
 verify_sha256() {
     local file="$1" expected="$2"
