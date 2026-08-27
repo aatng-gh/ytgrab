@@ -8,12 +8,7 @@ trap 'rm -rf "$TEST_DIR"' EXIT
 if [ -n "${SDKROOT:-}" ]; then
     SDK="$SDKROOT"
 else
-    SDK=""
-    for candidate in MacOSX26.sdk MacOSX26.5.sdk MacOSX15.sdk MacOSX14.sdk; do
-        path="/Library/Developer/CommandLineTools/SDKs/$candidate"
-        if [ -d "$path" ]; then SDK="$path"; break; fi
-    done
-    if [ -z "$SDK" ]; then SDK="$(xcrun --show-sdk-path)"; fi
+    SDK="$(xcrun --sdk macosx --show-sdk-path)"
 fi
 
 CLANG_MODULE_CACHE_PATH="$TEST_DIR/modules" \

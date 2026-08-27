@@ -12,22 +12,13 @@ MODULE_CACHE="${TMPDIR:-/private/tmp}/YTGrab-module-cache"
 export CLANG_MODULE_CACHE_PATH="$MODULE_CACHE"
 export SWIFT_MODULECACHE_PATH="$MODULE_CACHE"
 
-# SwiftUI's newest SDK declares @State and friends as macros, and the macro
-# plugin (libSwiftUIMacros.dylib) only ships with Xcode — not with the Command
-# Line Tools. So prefer an SDK that still declares them as property wrappers
-# unless that plugin is actually present.
+# Ask xcrun for the macOS SDK paired with the selected developer toolchain.
+# The explicit SDK name matters on machines that have both Xcode and standalone
+# Command Line Tools: an unqualified lookup can return a CLT SDK that is newer
+# than, and incompatible with, Xcode's Swift compiler.
 pick_sdk() {
     if [ -n "${SDKROOT:-}" ]; then echo "$SDKROOT"; return; fi
-    local toolchain_plugins
-    toolchain_plugins="$(dirname "$(xcrun --find swiftc)")/../lib/swift/host/plugins"
-    if [ -f "$toolchain_plugins/libSwiftUIMacros.dylib" ]; then
-        xcrun --show-sdk-path; return
-    fi
-    for candidate in MacOSX26.5.sdk MacOSX26.sdk MacOSX15.sdk MacOSX14.sdk; do
-        local path="/Library/Developer/CommandLineTools/SDKs/$candidate"
-        [ -d "$path" ] && { echo "$path"; return; }
-    done
-    xcrun --show-sdk-path
+    xcrun --sdk macosx --show-sdk-path
 }
 SDK="$(pick_sdk)"
 
