@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "schedule": ["before 6am on monday"],
+  "dependencyDashboard": true,
+  "labels": ["dependencies"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update embedded release binaries and their SHA-256 checksums",
+      "managerFilePatterns": ["/^build\\.sh$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>[^ ]+) packageName=(?<packageName>[^ ]+) versioning=(?<versioning>[a-z-]+)\\n[A-Z0-9_]+_VERSION=\"(?<currentValue>[^\"]+)\"\\n[A-Z0-9_]+_SHA256=\"(?<currentDigest>[a-f0-9]{64})\""
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["eugeneware/ffmpeg-static"],
+      "groupName": "FFmpeg static tools"
+    }
+  ]
+}

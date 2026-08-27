@@ -194,7 +194,7 @@ final class Downloader: ObservableObject {
             }
             let lines = buffer.take(chunk)
             guard !lines.isEmpty else { return }
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 for line in lines { self?.handle(line: line) }
             }
         }

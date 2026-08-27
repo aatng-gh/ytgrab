@@ -26,12 +26,22 @@ SDK="$(pick_sdk)"
 # another Apple Silicon Mac with nothing pre-installed. Cached under
 # Resources/vendor/ after the first fetch — delete that folder to re-pull.
 VENDOR="$ROOT/Resources/vendor"
-YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp_macos"
-FFMPEG_URL="https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffmpeg-darwin-arm64"
-FFPROBE_URL="https://github.com/eugeneware/ffmpeg-static/releases/download/b6.1.1/ffprobe-darwin-arm64"
+
+# renovate: datasource=github-release-attachments depName=yt-dlp packageName=yt-dlp/yt-dlp versioning=loose
+YTDLP_VERSION="2026.08.19"
 YTDLP_SHA256="0f192b7ec147ab6288885d6351d9ab67367640029b4377576ef46dd79cf7b202"
+
+# renovate: datasource=github-release-attachments depName=ffmpeg packageName=eugeneware/ffmpeg-static versioning=loose
+FFMPEG_VERSION="b6.1.1"
 FFMPEG_SHA256="a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+
+# renovate: datasource=github-release-attachments depName=ffprobe packageName=eugeneware/ffmpeg-static versioning=loose
+FFPROBE_VERSION="b6.1.1"
 FFPROBE_SHA256="bb2db6f5d8cef919da12fbf592119a987202a8c060a886f3cab091f9cab90b64"
+
+YTDLP_URL="https://github.com/yt-dlp/yt-dlp/releases/download/${YTDLP_VERSION}/yt-dlp_macos"
+FFMPEG_URL="https://github.com/eugeneware/ffmpeg-static/releases/download/${FFMPEG_VERSION}/ffmpeg-darwin-arm64"
+FFPROBE_URL="https://github.com/eugeneware/ffmpeg-static/releases/download/${FFPROBE_VERSION}/ffprobe-darwin-arm64"
 
 verify_sha256() {
     local file="$1" expected="$2"
