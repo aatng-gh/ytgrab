@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+
+- Switching between video and audio, or between sign-in modes, no longer
+  shifts the window's controls sideways.
+
 ## 2.0.0
 
 - Rebuilt as a Go app on MyGo. It builds with only Go, and needs nothing

@@ -235,12 +235,12 @@ func TestDownload(t *testing.T) {
 
 func TestFormatChoices(t *testing.T) {
 	h := newHarness(t, managedTools(t), nil)
-	h.has("Resolution", "Container", "Include English subtitles", "Embed metadata and cover art")
-	h.lacks("Bitrate")
+	h.has("Quality", "Format", "1080p", "MP4 (most compatible)", "Include English subtitles", "Embed metadata and cover art")
+	h.lacks("M4A (AAC)")
 
 	h.click("Audio only")
-	h.has("Bitrate", "Embed metadata and cover art")
-	h.lacks("Resolution", "Include English subtitles")
+	h.has("Quality", "Format", "Embed metadata and cover art")
+	h.lacks("Include English subtitles")
 	if h.store.Load().Options.Kind != request.Audio {
 		t.Error("the Audio choice wasn't saved")
 	}
@@ -285,7 +285,7 @@ func TestSignIn(t *testing.T) {
 	h.has("1 cookie")
 
 	h.click("From browser")
-	h.has("Browser", "Profile")
+	h.has("From", "Chrome", "Profile")
 	h.lacks("Load file…")
 }
 
@@ -408,7 +408,7 @@ func TestRemembersChoices(t *testing.T) {
 	if h.app.form.Options.Kind != request.Audio || h.app.form.Auth.Browser != "firefox" || h.app.form.OutputDir != "/Volumes/Media" {
 		t.Errorf("form %+v", h.app.form)
 	}
-	h.has("Bitrate", "/Volumes/Media")
+	h.has("M4A (AAC)", "/Volumes/Media")
 }
 
 func TestLaunchCheckIsQuiet(t *testing.T) {
@@ -654,4 +654,35 @@ func TestCloseCancelsAnUpdate(t *testing.T) {
 	case <-time.After(2 * time.Second):
 		t.Fatal("Close left the yt-dlp update running")
 	}
+}
+
+// TestLayoutHoldsStill checks that switching modes doesn't move the controls
+// sideways: the form's label column is as wide as its widest shown label.
+func TestLayoutHoldsStill(t *testing.T) {
+	h := newHarness(t, managedTools(t), nil)
+	x := func(label string) float32 {
+		t.Helper()
+		r, ok := h.tt.Find(label)
+		if !ok {
+			t.Fatalf("%q not shown; texts %q", label, h.tt.Texts())
+		}
+		return r.X
+	}
+	want := x("Video") // left-aligned beside the labels, and always shown
+	check := func(state string) {
+		t.Helper()
+		if got := x("Video"); got != want {
+			t.Errorf("%s: the form moved by %v", state, got-want)
+		}
+	}
+	h.click("Audio only")
+	check("audio")
+	h.click("Paste cookies")
+	check("pasted cookies")
+	h.click("From browser")
+	check("from browser")
+	h.click("Download only a time range")
+	check("time range")
+	h.click("Video")
+	check("back to video")
 }

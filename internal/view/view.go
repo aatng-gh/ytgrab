@@ -292,11 +292,13 @@ func (a *App) formatSection(c *ui.Context) {
 			}).Row().Gap(16)
 		})
 		if opts.Kind == request.Video {
-			ui.Field(c, "Resolution", func() { choice(c, &opts.Video.MaxHeight, request.Heights, heightLabel) })
-			ui.Field(c, "Container", func() { choice(c, &opts.Video.Container, request.Containers, containerLabel) })
+			// Labels that come and go are no wider than the ones always shown,
+			// so the form's label column, and every control, holds still.
+			ui.Field(c, "Format", func() { choice(c, &opts.Video.Container, request.Containers, containerLabel) })
+			ui.Field(c, "Quality", func() { choice(c, &opts.Video.MaxHeight, request.Heights, heightLabel) })
 		} else {
 			ui.Field(c, "Format", func() { choice(c, &opts.Audio.Format, request.AudioFormats, formatLabel) })
-			bitrate := ui.Field(c, "Bitrate", func() {
+			bitrate := ui.Field(c, "Quality", func() {
 				choice(c, &opts.Audio.Bitrate, request.Bitrates, bitrateLabel).Disabled(opts.Audio.Format.Lossless())
 			})
 			if opts.Audio.Format.Lossless() {
@@ -350,7 +352,7 @@ func (a *App) signInSection(c *ui.Context, problems map[request.Field]string) {
 				})
 			}).Error(a.cookieError(problems))
 		case request.FromBrowser:
-			ui.Field(c, "Browser", func() { choice(c, &auth.Browser, request.Browsers, browserLabel) })
+			ui.Field(c, "From", func() { choice(c, &auth.Browser, request.Browsers, browserLabel) })
 			ui.Field(c, "Profile", func() { ui.TextInput(c, &auth.Profile).Placeholder("Optional").Width(200) })
 		}
 	}).Disabled(a.running())
