@@ -1,81 +1,105 @@
 <p align="center">
-  <img src="Resources/AppIcon.png" width="128" height="128" alt="YTGrab icon">
+  <img src="resources/icon.png" width="128" height="128" alt="YTGrab icon">
 </p>
 
 # YTGrab
 
-YTGrab is a small native macOS front end for [yt-dlp](https://github.com/yt-dlp/yt-dlp). It provides the common download controls without requiring users to assemble command-line arguments themselves.
+YTGrab is a small macOS app for downloading video and audio with
+[yt-dlp](https://github.com/yt-dlp/yt-dlp), without assembling command-line
+arguments. It ships with yt-dlp and FFmpeg inside, so nothing needs to be
+installed, and it keeps itself and yt-dlp up to date.
 
 ## Features
 
 - Download video or extract audio
-- Select a maximum video resolution and MP4 or MKV output
-- Export MP3, M4A, Opus, FLAC, or WAV audio
+- Choose a maximum resolution and MP4 or MKV output
+- Export MP3, M4A, Opus, FLAC or WAV audio
 - Download playlists or a selected time range
-- Embed metadata, cover art, and English subtitles
-- Access signed-in content with a temporary Netscape cookie jar or browser cookies
-- View live progress and the complete yt-dlp log
-- Cancel downloads and reveal completed files in Finder
+- Embed metadata, cover art and English subtitles
+- Access signed-in content with pasted cookies or cookies from a browser
+- View live progress and the full yt-dlp log
+- Cancel downloads and reveal finished files in Finder
 
-## Requirements
+## Staying up to date
 
-- macOS 14 or newer
-- Apple Silicon for the self-contained app bundle
-- Apple Command Line Tools or Xcode
-- An internet connection during the first build
+- **yt-dlp** updates itself, because sites change often enough that a fixed
+  copy stops working within weeks.
+  - On first launch, YTGrab copies its bundled yt-dlp to
+    `~/Library/Application Support/YTGrab/bin/`.
+  - It checks that copy for a new stable release once a day, using yt-dlp's
+    own updater, which verifies release checksums.
+  - You can also update from **YTGrab → Update yt-dlp**, or with the
+    **Update yt-dlp** button after a failed download.
+  - A yt-dlp you choose with **Locate…** is left alone.
+- **YTGrab** updates itself from this repository's
+  [releases](https://github.com/aatng-gh/ytgrab/releases).
+  - It checks daily, or from **YTGrab → Check for Updates…**.
+  - Updates are signed, and the app checks the signature before installing.
+  - The app must be in `/Applications` or `~/Applications` to update itself.
 
-The build downloads pinned yt-dlp, FFmpeg, and ffprobe executables, verifies their SHA-256 checksums, and embeds them in the application. The downloaded tools are cached in the ignored `Resources/vendor/` directory.
+## Install
 
-### Keeping yt-dlp current
+Download the disk image from the latest release and drag YTGrab to
+Applications. It needs macOS 14 or newer on Apple silicon.
 
-Sites change often enough that a yt-dlp pinned at build time stops working within weeks. On first launch, YTGrab copies the embedded yt-dlp to `~/Library/Application Support/YTGrab/bin/` and uses that copy from then on. It checks for a new stable release at most once a day, using yt-dlp's own updater, which verifies the release checksums. You can also run **YTGrab → Update yt-dlp** at any time, or click **Update yt-dlp** after a failed download. You don't need to rebuild the app.
-
-A yt-dlp chosen with **Locate…** is left alone; update it the way you installed it (for example, `brew upgrade yt-dlp`).
+The app is ad-hoc signed, not notarized, so macOS blocks it the first time.
+Open it once from **System Settings → Privacy & Security → Open Anyway**.
+Later updates don't ask again.
 
 ## Build
 
-Install the Apple Command Line Tools if necessary:
+You need only Go 1.27 or newer.
 
 ```sh
-xcode-select --install
+./scripts/fetch-tools.sh        # pinned yt-dlp, ffmpeg and ffprobe, checksum-verified
+go tool mygo dev                # run with live reload
+go tool mygo build              # build/darwin-arm64/YTGrab.app and a disk image
+go test ./...
 ```
 
-Then build and open YTGrab:
+The tools are cached in the ignored `resources/darwin-arm64/bin/`.
+Renovate keeps their pins in `scripts/fetch-tools.sh` current.
 
-```sh
-./build.sh
-open build/YTGrab.app
-```
+The app is built on [MyGo](https://mygo.egoist.dev). Its window is MyGo's
+native UI, written in Go with no web view.
 
-The resulting app is ad-hoc signed for local use. It is not Developer ID signed or notarized for third-party distribution.
+## Release
+
+1. Bump `version` in `mygo.json` and add a section to `CHANGELOG.md`.
+2. Commit, then push a matching tag:
+
+   ```sh
+   git tag v2.0.1 && git push origin v2.0.1
+   ```
+
+3. The Release workflow tests and builds the app, signs the update, and
+   uploads it to a draft release.
+4. Publish the draft, and installed apps update to it.
+
+The workflow needs the `MYGO_UPDATER_PRIVATE_KEY` repository secret, holding
+the contents of the `mygo-update.key` that `go tool mygo keygen` made. Keep a
+copy in a password manager. Installed apps accept only updates signed with
+it.
 
 ## Usage
 
-1. Paste a URL supported by yt-dlp.
-2. Choose video or audio settings.
-3. Select an authentication method only if the content requires it.
-4. Choose a destination and click **Download**.
-
-Only download content that you own or are authorized to access. You are responsible for complying with applicable laws and the source site's terms.
+Only download content that you own or are authorized to access. You are
+responsible for complying with applicable laws and the source site's terms.
 
 ## Privacy
 
-YTGrab runs downloads locally and does not include analytics or telemetry. URLs, pasted cookies, and trim ranges are not saved in preferences. Pasted cookies are written to a private temporary file for the active download and removed afterward; stale temporary jars are cleaned up when the app launches.
+YTGrab runs downloads locally and has no analytics or telemetry. URLs, pasted
+cookies, time ranges and browser profiles are never saved. Pasted cookies go
+to a private temporary file for the length of the download, then are deleted;
+any left behind by a crash are removed at the next launch.
 
-Using browser authentication delegates cookie access to yt-dlp. macOS may request Keychain permission, and Chromium-family browsers may need to be closed first. Never share cookie files or unredacted verbose logs.
+Reading cookies from a browser is done by yt-dlp. macOS may ask for Keychain
+access, and Chromium-family browsers may need to be quit first. Never share
+cookie files or unredacted logs.
 
-## Development
+## Notices
 
-Run the logic tests with:
+The bundled yt-dlp and FFmpeg are subject to their own licenses.
 
-```sh
-./Tests/run.sh
-```
-
-CI runs both the logic tests and a clean app build on macOS.
-
-## License
-
-YTGrab is available under the [MIT License](LICENSE). The downloaded yt-dlp and FFmpeg components remain subject to their respective licenses.
-
-YTGrab is an independent project and is not affiliated with YouTube, yt-dlp, or FFmpeg.
+YTGrab is an independent project and is not affiliated with YouTube, yt-dlp or
+FFmpeg.

@@ -4,14 +4,20 @@
     "config:recommended",
     "helpers:pinGitHubActionDigests"
   ],
-  "schedule": ["before 6am on monday"],
+  "schedule": [
+    "before 6am on monday"
+  ],
   "dependencyDashboard": true,
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "customManagers": [
     {
       "customType": "regex",
       "description": "Update embedded release binaries and their SHA-256 checksums",
-      "managerFilePatterns": ["/^build\\.sh$/"],
+      "managerFilePatterns": [
+        "/^scripts/fetch-tools\\.sh$/"
+      ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>[^ ]+) packageName=(?<packageName>[^ ]+) versioning=(?<versioning>[a-z-]+)\\n[A-Z0-9_]+_VERSION=\"(?<currentValue>[^\"]+)\"\\n[A-Z0-9_]+_SHA256=\"(?<currentDigest>[a-f0-9]{64})\""
       ]
@@ -19,12 +25,18 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": ["eugeneware/ffmpeg-static"],
+      "matchPackageNames": [
+        "eugeneware/ffmpeg-static"
+      ],
       "groupName": "FFmpeg static tools"
     },
     {
-      "matchManagers": ["github-actions"],
-      "matchDepTypes": ["github-runner"],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "github-runner"
+      ],
       "enabled": false
     }
   ]

@@ -23,14 +23,27 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run logic tests
-        run: ./Tests/run.sh
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests
+        run: go test -race ./...
+
+      - name: Vet
+        run: |
+          go vet ./...
+          go tool mygo vet .
+
+      - name: Fetch bundled tools
+        run: ./scripts/fetch-tools.sh
 
       - name: Build app
-        run: ./build.sh
+        run: go tool mygo build -skip-dmg
 
       - name: Verify app bundle
         run: |
-          plutil -lint build/YTGrab.app/Contents/Info.plist
-          codesign --verify --deep --strict build/YTGrab.app
-          build/YTGrab.app/Contents/Resources/bin/yt-dlp --version
+          codesign --verify --deep --strict build/darwin-arm64/YTGrab.app
+          build/darwin-arm64/YTGrab.app/Contents/Resources/bin/yt-dlp --version
+          build/darwin-arm64/YTGrab.app/Contents/Resources/bin/ffmpeg -version | head -1

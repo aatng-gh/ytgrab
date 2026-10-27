@@ -2,6 +2,15 @@
 // how yt-dlp is told to do it (package ytdlp) or how it runs (package job).
 package request
 
+import (
+	"regexp"
+	"slices"
+	"strconv"
+	"strings"
+
+	"github.com/aatng-gh/ytgrab/internal/cookies"
+)
+
 // Request is one download, as the form describes it.
 type Request struct {
 	URL string
@@ -17,15 +26,15 @@ type Request struct {
 // Options are the format choices, kept across launches. Nothing in here is
 // per-download or sensitive.
 type Options struct {
-	Kind  Kind
-	Video VideoOptions
-	Audio AudioOptions
+	Kind  Kind         `json:"kind"`
+	Video VideoOptions `json:"video"`
+	Audio AudioOptions `json:"audio"`
 	// Playlist downloads the whole playlist when the URL is one.
-	Playlist bool
+	Playlist bool `json:"playlist"`
 	// EmbedMetadata embeds metadata and, where the format allows, cover art.
-	EmbedMetadata bool
+	EmbedMetadata bool `json:"embedMetadata"`
 	// Subtitles embeds English subtitles (video only).
-	Subtitles bool
+	Subtitles bool `json:"subtitles"`
 }
 
 // DefaultOptions are the choices before the user has made any.
@@ -38,6 +47,28 @@ func DefaultOptions() Options {
 	}
 }
 
+// Normalized replaces values the app doesn't offer, as from an older or
+// hand-edited settings file, with the defaults.
+func (o Options) Normalized() Options {
+	d := DefaultOptions()
+	if !slices.Contains(Kinds, o.Kind) {
+		o.Kind = d.Kind
+	}
+	if !slices.Contains(Heights, o.Video.MaxHeight) {
+		o.Video.MaxHeight = d.Video.MaxHeight
+	}
+	if !slices.Contains(Containers, o.Video.Container) {
+		o.Video.Container = d.Video.Container
+	}
+	if !slices.Contains(AudioFormats, o.Audio.Format) {
+		o.Audio.Format = d.Audio.Format
+	}
+	if !slices.Contains(Bitrates, o.Audio.Bitrate) {
+		o.Audio.Bitrate = d.Audio.Bitrate
+	}
+	return o
+}
+
 type Kind string
 
 const (
@@ -45,11 +76,13 @@ const (
 	Audio Kind = "audio"
 )
 
+var Kinds = []Kind{Video, Audio}
+
 type VideoOptions struct {
 	// MaxHeight caps the resolution, in pixels; 0 means best available. A cap
 	// is never exceeded, even when nothing smaller exists.
-	MaxHeight int
-	Container Container
+	MaxHeight int       `json:"maxHeight"`
+	Container Container `json:"container"`
 }
 
 // Heights are the caps the form offers, best first.
@@ -62,10 +95,12 @@ const (
 	MKV Container = "mkv"
 )
 
+var Containers = []Container{MP4, MKV}
+
 type AudioOptions struct {
-	Format AudioFormat
+	Format AudioFormat `json:"format"`
 	// Bitrate in kbps for lossy formats; BestBitrate leaves it to the source.
-	Bitrate int
+	Bitrate int `json:"bitrate"`
 }
 
 const BestBitrate = 0
@@ -82,6 +117,8 @@ const (
 	FLAC AudioFormat = "flac"
 	WAV  AudioFormat = "wav"
 )
+
+var AudioFormats = []AudioFormat{MP3, M4A, Opus, FLAC, WAV}
 
 // Lossless formats ignore Bitrate.
 func (f AudioFormat) Lossless() bool { return f == FLAC || f == WAV }
@@ -137,16 +174,66 @@ const (
 )
 
 // Validate returns what stops the request from starting; none means ready.
-//
-// A request is ready when the URL is http(s), a range has at least one valid
-// timestamp with start before end when both are absolute, pasted cookies hold
-// at least one cookie, and OutputDir is set.
 func (r Request) Validate() []Problem {
-	panic("TODO")
+	var problems []Problem
+	add := func(f Field, msg string) { problems = append(problems, Problem{f, msg}) }
+
+	url := strings.TrimSpace(r.URL)
+	switch {
+	case url == "":
+		add(FieldURL, "Paste a link to download.")
+	case !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://"):
+		add(FieldURL, "The link must start with http:// or https://.")
+	}
+	if r.Range != nil {
+		if msg := r.Range.problem(); msg != "" {
+			add(FieldRange, msg)
+		}
+	}
+	if r.Auth.Mode == PastedCookies && cookies.Count(r.Auth.Cookies) == 0 {
+		add(FieldCookies, "No cookies recognised. Paste a Netscape cookies.txt export.")
+	}
+	if r.OutputDir == "" {
+		add(FieldOutput, "Choose a folder to save to.")
+	}
+	return problems
 }
 
-// ParseTimestamp reads a Range endpoint. fromEnd is true for negative
+// problem explains what is wrong with the range, or returns "".
+func (rg Range) problem() string {
+	start, end := strings.TrimSpace(rg.Start), strings.TrimSpace(rg.End)
+	if start == "" && end == "" {
+		return "Enter a start, an end, or both."
+	}
+	s, sFromEnd, sOK := parseTimestamp(start)
+	e, eFromEnd, eOK := parseTimestamp(end)
+	if (start != "" && !sOK) || (end != "" && !eOK) {
+		return "Use timestamps like 1:30 or 12:04:00."
+	}
+	// yt-dlp accepts an inverted range silently and writes nothing, so catch
+	// it here. Ends counted from the end of the media can't be compared.
+	if start != "" && end != "" && !sFromEnd && !eFromEnd && s >= e {
+		return "The start must come before the end."
+	}
+	return ""
+}
+
+var timestampPattern = regexp.MustCompile(`^-?\d+(:[0-5]\d){0,2}(\.\d+)?$`)
+
+// parseTimestamp reads a Range endpoint. fromEnd is true for negative
 // timestamps, whose seconds count back from the end of the media.
-func ParseTimestamp(s string) (seconds float64, fromEnd bool, ok bool) {
-	panic("TODO")
+func parseTimestamp(s string) (seconds float64, fromEnd bool, ok bool) {
+	s = strings.TrimSpace(s)
+	if !timestampPattern.MatchString(s) {
+		return 0, false, false
+	}
+	s, fromEnd = strings.CutPrefix(s, "-")
+	for _, part := range strings.Split(s, ":") {
+		v, err := strconv.ParseFloat(part, 64)
+		if err != nil {
+			return 0, false, false
+		}
+		seconds = seconds*60 + v
+	}
+	return seconds, fromEnd, true
 }

@@ -2,11 +2,9 @@
 .AppleDouble
 .LSOverride
 
-# Local builds, frontend output and MyGo's working files
+# Builds and MyGo's working files
 build/
-dist/
 .mygo/
-node_modules/
 
 # Tools fetched by scripts/fetch-tools.sh
 resources/*/bin/
@@ -15,10 +13,5 @@ resources/*/bin/
 .idea/
 .vscode/
 
-# Local environment and signing material
-.env
-.env.*
-!.env.example
-*.mobileprovision
-*.p12
-*.key
+# Signs app updates
+mygo-update.key

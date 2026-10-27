@@ -1,5 +1,5 @@
 // YTGrab is a desktop front end for yt-dlp. main only wires the packages
-// together; see docs/design.md.
+// together.
 package main
 
 import (
@@ -64,7 +64,7 @@ func main() {
 			StateKey:  "main",
 			Content:   ui.View(app.View),
 		})
-		app.Attach(win)
+		app.Attach(view.WindowHost(win))
 	})
 	if err := mygo.App.Run(); err != nil {
 		log.Fatal(err)

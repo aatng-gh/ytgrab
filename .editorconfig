@@ -9,17 +9,13 @@ trim_trailing_whitespace = true
 [*.go]
 indent_style = tab
 
-[*.{ts,css,html,json}]
+[*.{json,yml,yaml}]
 indent_style = space
 indent_size = 2
 
 [*.sh]
 indent_style = space
 indent_size = 4
-
-[*.{yml,yaml}]
-indent_style = space
-indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
