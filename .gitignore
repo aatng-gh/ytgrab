@@ -2,16 +2,14 @@
 .AppleDouble
 .LSOverride
 
-# Local builds and downloaded tool caches
+# Local builds, frontend output and MyGo's working files
 build/
-Resources/vendor/
+dist/
+.mygo/
+node_modules/
 
-# Swift and Xcode output
-.build/
-.swiftpm/
-DerivedData/
-*.xcuserstate
-xcuserdata/
+# Tools fetched by scripts/fetch-tools.sh
+resources/*/bin/
 
 # Editor-local files
 .idea/
@@ -23,3 +21,4 @@ xcuserdata/
 !.env.example
 *.mobileprovision
 *.p12
+*.key
