@@ -1,0 +1,25 @@
+{
+  "tools": [
+    {
+      "name": "yt-dlp",
+      "repo": "yt-dlp/yt-dlp",
+      "version": "2026.10.26",
+      "asset": "yt-dlp_macos",
+      "sha256": "0f922c15ccc0b83eefa1c8bc9104e434318c4bf16e408e1ee93b7745a6efe0aa"
+    },
+    {
+      "name": "ffmpeg",
+      "repo": "eugeneware/ffmpeg-static",
+      "version": "b6.1.1",
+      "asset": "ffmpeg-darwin-arm64",
+      "sha256": "a90e3db6a3fd35f6074b013f948b1aa45b31c6375489d39e572bea3f18336584"
+    },
+    {
+      "name": "ffprobe",
+      "repo": "eugeneware/ffmpeg-static",
+      "version": "b6.1.1",
+      "asset": "ffprobe-darwin-arm64",
+      "sha256": "bb2db6f5d8cef919da12fbf592119a987202a8c060a886f3cab091f9cab90b64"
+    }
+  ]
+}

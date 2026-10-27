@@ -6,7 +6,7 @@
 build/
 .mygo/
 
-# Tools fetched by scripts/fetch-tools.sh
+# Tools fetched by cmd/fetch-tools
 resources/*/bin/
 
 # Editor-local files

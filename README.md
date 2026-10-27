@@ -51,14 +51,16 @@ Later updates don't ask again.
 You need only Go 1.27 or newer.
 
 ```sh
-./scripts/fetch-tools.sh        # pinned yt-dlp, ffmpeg and ffprobe, checksum-verified
-go tool mygo dev                # run with live reload
 go tool mygo build              # build/darwin-arm64/YTGrab.app and a disk image
+go tool mygo dev                # run with live reload
 go test ./...
 ```
 
-The tools are cached in the ignored `resources/darwin-arm64/bin/`.
-Renovate keeps their pins in `scripts/fetch-tools.sh` current.
+Every build first runs `go run ./cmd/fetch-tools`, which downloads the
+yt-dlp, ffmpeg and ffprobe pinned in `cmd/fetch-tools/tools.json`, checks their
+SHA-256 sums, and caches them in the ignored `resources/darwin-arm64/bin/`.
+`mygo dev` doesn't, so on a fresh clone run it once yourself. Renovate keeps
+the pins current.
 
 The app is built on [MyGo](https://mygo.egoist.dev). Its window is MyGo's
 native UI, written in Go with no web view.

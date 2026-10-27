@@ -171,7 +171,7 @@ func command(ctx context.Context, name string, args ...string) *exec.Cmd {
 }
 
 // versionFile records the version of the yt-dlp beside it: written by
-// fetch-tools.sh into the bundle, and by Seed and Update for the managed copy.
+// cmd/fetch-tools into the bundle, and by Seed and Update for the managed copy.
 const versionFile = "yt-dlp.version"
 
 // Seed copies the bundled yt-dlp into dirs.Managed when there is no usable

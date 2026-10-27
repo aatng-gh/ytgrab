@@ -36,9 +36,6 @@ jobs:
           go vet ./...
           go tool mygo vet .
 
-      - name: Fetch bundled tools
-        run: ./scripts/fetch-tools.sh
-
       - name: Build app
         run: go tool mygo build -skip-dmg
 
