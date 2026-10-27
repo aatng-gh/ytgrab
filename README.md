@@ -26,6 +26,12 @@ YTGrab is a small native macOS front end for [yt-dlp](https://github.com/yt-dlp/
 
 The build downloads pinned yt-dlp, FFmpeg, and ffprobe executables, verifies their SHA-256 checksums, and embeds them in the application. The downloaded tools are cached in the ignored `Resources/vendor/` directory.
 
+### Keeping yt-dlp current
+
+Sites change often enough that a yt-dlp pinned at build time stops working within weeks. On first launch, YTGrab copies the embedded yt-dlp to `~/Library/Application Support/YTGrab/bin/` and uses that copy from then on. It checks for a new stable release at most once a day, using yt-dlp's own updater, which verifies the release checksums. You can also run **YTGrab → Update yt-dlp** at any time, or click **Update yt-dlp** after a failed download. You don't need to rebuild the app.
+
+A yt-dlp chosen with **Locate…** is left alone; update it the way you installed it (for example, `brew upgrade yt-dlp`).
+
 ## Build
 
 Install the Apple Command Line Tools if necessary:

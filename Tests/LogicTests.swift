@@ -40,6 +40,29 @@ struct LogicTests {
             check(!FileManager.default.fileExists(atPath: jar.path), "removes the cookie jar")
         }
 
+        let updated = YtdlpUpdater.summarize(output: """
+            Current version: stable@2026.08.19 from yt-dlp/yt-dlp
+            Latest version: stable@2026.10.26 from yt-dlp/yt-dlp
+            Updating to stable@2026.10.26 from yt-dlp/yt-dlp ...
+            Updated yt-dlp to stable@2026.10.26 from yt-dlp/yt-dlp
+            """, exitCode: 0)
+        check(updated.ok && updated.message == "Updated yt-dlp to stable@2026.10.26 from yt-dlp/yt-dlp",
+              "reports a completed yt-dlp update")
+
+        let current = YtdlpUpdater.summarize(output: """
+            Latest version: stable@2026.10.26 from yt-dlp/yt-dlp
+            yt-dlp is up to date (stable@2026.10.26 from yt-dlp/yt-dlp)
+            """, exitCode: 0)
+        check(current.ok && current.message.hasPrefix("yt-dlp is up to date"),
+              "reports an up-to-date yt-dlp")
+
+        let offline = YtdlpUpdater.summarize(output: """
+            ERROR: Unable to obtain version info (<urlopen error [Errno 8] nodename nor servname provided>)
+            """, exitCode: 1)
+        check(!offline.ok && offline.message.hasPrefix("yt-dlp update failed: Unable to obtain version info"),
+              "surfaces the updater's error")
+        check(!YtdlpUpdater.summarize(output: "", exitCode: 1).ok, "treats silent failure as failure")
+
         if failures > 0 {
             throw TestFailure(count: failures)
         }

@@ -25,9 +25,21 @@ enum ToolLocator {
         return FileManager.default.fileExists(atPath: dir.path) ? dir : nil
     }
 
+    /// `~/Library/Application Support/YTGrab/bin`: writable copies of tools
+    /// that have to keep updating after the app is built (see `YtdlpUpdater`).
+    static var managedDirectory: URL {
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return support.appendingPathComponent("YTGrab/bin", isDirectory: true)
+    }
+
     static func find(_ name: String, override: String = "") -> String? {
         let custom = override.trimmingCharacters(in: .whitespacesAndNewlines)
         if !custom.isEmpty, isUsable(custom) { return custom }
+
+        // A managed copy is the bundled one plus updates, so it wins over the
+        // bundle's frozen copy.
+        let managed = managedDirectory.appendingPathComponent(name).path
+        if isUsable(managed) { return managed }
 
         // The bundled copy is preferred, but only if it can actually run here —
         // the embedded ffmpeg/ffprobe are arm64-only, and silently shadowing a

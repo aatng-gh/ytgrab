@@ -5,16 +5,22 @@ import AppKit
 struct YTGrabApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var downloader = Downloader()
+    @StateObject private var updater = YtdlpUpdater()
 
     var body: some Scene {
         WindowGroup("YTGrab") {
             ContentView()
                 .environmentObject(downloader)
+                .environmentObject(updater)
                 .onAppear { delegate.downloader = downloader }
         }
         .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) { }
+            CommandGroup(after: .appInfo) {
+                Button("Update yt-dlp") { updater.update() }
+                    .disabled(updater.isUpdating || downloader.isRunning)
+            }
         }
 
         Window("YTGrab Log", id: "log") {

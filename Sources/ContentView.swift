@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @EnvironmentObject private var downloader: Downloader
+    @EnvironmentObject private var updater: YtdlpUpdater
 
     @State private var request = DownloadRequest()
     @State private var cookieLoadError = ""
@@ -296,6 +297,12 @@ struct ContentView: View {
                             .font(.caption).foregroundStyle(.secondary)
                             .lineLimit(2).truncationMode(.tail)
                             .help(downloader.errorDetail)
+                    } else if !downloader.isRunning && !updater.message.isEmpty {
+                        Text(updater.message)
+                            .font(.caption)
+                            .foregroundStyle(updater.failed ? Color.orange : .secondary)
+                            .lineLimit(2).truncationMode(.tail)
+                            .help(updater.message)
                     } else if !downloader.title.isEmpty {
                         Text(downloader.title)
                             .font(.caption).foregroundStyle(.secondary)
@@ -331,6 +338,14 @@ struct ContentView: View {
                     .buttonStyle(.bordered)
                     .foregroundStyle(.primary)
                 }
+                if downloader.failed && ytdlp == YtdlpUpdater.managedPath {
+                    // Most extractor failures are fixed upstream within days.
+                    Button("Update yt-dlp") { updater.update() }
+                        .buttonStyle(.bordered)
+                        .foregroundStyle(.primary)
+                        .disabled(updater.isUpdating)
+                        .help("Fetch the latest yt-dlp, then try the download again")
+                }
                 Spacer()
                 if downloader.isRunning {
                     Button("Cancel", role: .cancel) { downloader.cancel() }
@@ -342,7 +357,7 @@ struct ContentView: View {
                     Button("Download") { startDownload() }
                         .buttonStyle(.borderedProminent)
                         .keyboardShortcut(.defaultAction)
-                        .disabled(!request.isReady || ytdlp == nil || ffmpeg == nil)
+                        .disabled(!request.isReady || ytdlp == nil || ffmpeg == nil || updater.isUpdating)
                 }
             }
         }
@@ -409,11 +424,14 @@ struct ContentView: View {
         let override = ytdlpOverride
         Task {
             let found = await Task.detached(priority: .userInitiated) {
-                (ToolLocator.find("yt-dlp", override: override), ToolLocator.find("ffmpeg"))
+                YtdlpUpdater.seedManagedCopy()
+                return (ToolLocator.find("yt-dlp", override: override), ToolLocator.find("ffmpeg"))
             }.value
             ytdlp = found.0
             ffmpeg = found.1
             toolsChecked = true
+            updater.activePath = found.0
+            updater.updateIfDue()
         }
     }
 

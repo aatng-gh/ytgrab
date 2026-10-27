@@ -20,6 +20,8 @@ swiftc \
     -o "$TEST_DIR/LogicTests" \
     "$ROOT/Sources/Models.swift" \
     "$ROOT/Sources/Cookies.swift" \
+    "$ROOT/Sources/ToolLocator.swift" \
+    "$ROOT/Sources/YtdlpUpdater.swift" \
     "$ROOT/Tests/LogicTests.swift"
 
 "$TEST_DIR/LogicTests"
