@@ -9,7 +9,6 @@
   },
   "updates": {
     "publicKey": "DC4yGfPbKWU9Lwp3CDfNb1jLqAkInyS1DedxiS6WqX0=",
-    "github": "aatng-gh/ytgrab",
-    "privateKey": "mygo-update.key"
+    "github": "aatng-gh/ytgrab"
   }
 }
