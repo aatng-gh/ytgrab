@@ -1,0 +1,14 @@
+{
+  "name": "YTGrab",
+  "identifier": "local.ytgrab",
+  "version": "2.0.0",
+  "out": "build",
+  "buildCommand": "go run ./cmd/fetch-tools",
+  "macos": {
+    "minimumSystemVersion": "14.0"
+  },
+  "updates": {
+    "publicKey": "DC4yGfPbKWU9Lwp3CDfNb1jLqAkInyS1DedxiS6WqX0=",
+    "github": "aatng-gh/ytgrab"
+  }
+}
