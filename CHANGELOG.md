@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.2
+
+- New app icon, drawn to the macOS icon grid so it sits at the same size as
+  other apps in the Dock.
+
 ## 2.0.1
 
 - Switching between video and audio, or between sign-in modes, no longer
