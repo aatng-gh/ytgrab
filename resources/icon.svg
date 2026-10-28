@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#43423e"/>
+      <stop offset="1" stop-color="#171716"/>
+    </linearGradient>
+    <linearGradient id="hl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2a283"/>
+      <stop offset="1" stop-color="#c8573a"/>
+    </linearGradient>
+    <linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e3dacc"/>
+    </linearGradient>
+    <filter id="tile-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="arrow-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- macOS icon grid: 824px tile on a 1024px canvas -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)" filter="url(#tile-shadow)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#hl)"/>
+  <rect x="101.5" y="101.5" width="821" height="821" rx="184" fill="none" stroke="#ffffff" stroke-opacity="0.1" stroke-width="3"/>
+  <path d="M 282 590 L 282 712 Q 282 782 352 782 L 672 782 Q 742 782 742 712 L 742 590" fill="none" stroke="url(#ivory)" stroke-width="60" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 488 216 L 536 216 Q 572 216 572 252 L 572 470 L 694 470 Q 724 470 703 492 L 534 668 Q 512 690 490 668 L 321 492 Q 300 470 330 470 L 452 470 L 452 252 Q 452 216 488 216 Z" fill="url(#arrow)" filter="url(#arrow-shadow)"/>
+</svg>
